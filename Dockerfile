@@ -5,5 +5,6 @@ RUN apt-get install -y python3.6 python3-pip python-pip python-dev build-essenti
 RUN mkdir /app
 WORKDIR /app
 COPY . /app/
-RUN pip3 install -r requirements.txt
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
 CMD ["python", "app.py"]
