@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 from flask import Flask, render_template, Response
+import io
 import cv2
 
 app = Flask(__name__)
-video = cv2.VideoCapture(0)
+vc = cv2.VideoCapture(0)
 
 @app.route('/')
 def index():
@@ -14,10 +15,11 @@ def index():
 def gen():
     """Video streaming generator function."""
     while True:
-        rval, frame = video.read()
-        cv2.imwrite('t.jpg', frame)
+        read_return_code, frame = vc.read()
+        encode_return_code, image_buffer = cv2.imencode('.jpg', frame)
+        io_buf = io.BytesIO(image_buffer)
         yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + open('t.jpg', 'rb').read() + b'\r\n')
+               b'Content-Type: image/jpeg\r\n\r\n' + io_buf.read() + b'\r\n')
 
 
 @app.route('/video_feed')
